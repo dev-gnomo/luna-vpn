@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Luna VPN"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/hostInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Host SSH (ex: 1.2.3.4)"
+        android:inputType="textUri"/>
+
+    <EditText
+        android:id="@+id/portInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Porta (padrão 22)"
+        android:inputType="number"
+        android:text="22"/>
+
+    <EditText
+        android:id="@+id/userInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Usuário"/>
+
+    <EditText
+        android:id="@+id/passInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Senha"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/connectBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Conectar"/>
+
+    <Button
+        android:id="@+id/disconnectBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Desconectar"/>
+</LinearLayout>
