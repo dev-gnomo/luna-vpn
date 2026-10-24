@@ -23,7 +23,10 @@ class SshTunnel {
     }
 
     fun openChannel(destHost: String, destPort: Int) =
-        session?.openChannel("direct-tcpip", destHost, destPort)
+    (session?.openChannel("direct-tcpip") as? com.jcraft.jsch.ChannelDirectTCPIP)?.apply {
+        setHost(destHost)
+        setPort(destPort)
+    }
 
     fun disconnect() {
         runCatching { session?.disconnect() }
