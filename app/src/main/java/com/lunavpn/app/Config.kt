@@ -1,11 +1,10 @@
 package com.lunavpn.app
 
 object Config {
-    const val SSH_HOST = "77.112.117.49" // ⚠️ COLOQUE O IP DO SEU VPS AQUI
+    const val SSH_HOST = "77.112.117.49" 
     const val SSH_PORT = 22
-    const val SSH_USER = "ubuntu@ip-172-31-9-37"         // ⚠️ COLOQUE O USUÁRIO DO VPS AQUI
+    const val SSH_USER = "ubuntu"
 
-    // ⚠️ COLE A CHAVE PRIVADA AQUI DENTRO
     val SSH_PRIVATE_KEY = """
 -----BEGIN RSA PRIVATE KEY-----
 MIIG4wIBAAKCAYEA3yibmpqq2g3fAjadApmQ/Pi3fq1gdwzmR+mP1rB+5E135pFE
@@ -48,10 +47,26 @@ ezt0NPEPUVXStDhx/hB6CF8HcpZx2UT0dJKN1o0b5SE1QHnmgWwm
 -----END RSA PRIVATE KEY-----
 """.trimIndent()
 
-    val MODES = listOf(
-        "SSH DIRECT",
-        "SSH + PROXY",
-        "SSH + SSL",
-        "SSH + SSL PROXY"
+        data class LocalPayload(val mccMnc: String, val mode: String, val payload: String)
+
+    // Mapeamento pelas operadoras: Claro(72405), Tim(72402), Vivo(72406)
+    val LOCAL_PAYLOADS = listOf(
+        // CLARO
+        LocalPayload("72405", "DIRECT", "GET wss://minhaclaronxt.claro.com.br HTTP/1.0[crlf]Host: minhaclaronxt.claro.com.br[crlf]Connection: keep-alive[crlf]User-Agent: Upgrade [crlf][crlf]"),
+        
+        // TIM
+        LocalPayload("72402", "DIRECT", "GET ssl://br.srjesusteama.tk HTTP/1.1[crlf]Host: windowsvps.ellitegame.xyz: Websocket[crlf][crlf]"),
+        
+        // VIVO
+        LocalPayload("72406", "DIRECT", "ACL / HTTP/1.1[lf]Host: portalrecarga.vivo.com.br[crlf][crlf]"),
+        
+        // Fallback genérico
+        LocalPayload("00000", "DIRECT", "GET / HTTP/1.1[crlf]Host: default.com[crlf][crlf]")
     )
+
+    fun getLocalPayload(mccMnc: String, mode: String): String {
+        return LOCAL_PAYLOADS.find { it.mccMnc == mccMnc && it.mode == mode }?.payload
+            ?: LOCAL_PAYLOADS.find { it.mccMnc == "00000" && it.mode == mode }?.payload
+            ?: "GET / HTTP/1.1[crlf]Host: fallback.com[crlf][crlf]"
+    }
 }
