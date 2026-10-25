@@ -30,8 +30,10 @@ class LunaVpnService : VpnService() {
                 val host = intent.getStringExtra("host") ?: return START_NOT_STICKY
                 val port = intent.getIntExtra("port", 22)
                 val user = intent.getStringExtra("user") ?: return START_NOT_STICKY
-                val pass = intent.getStringExtra("pass") ?: return START_NOT_STICKY
-                scope.launch { connect(host, port, user, pass) }
+                val privateKey = intent.getStringExtra("privateKey") ?: return START_NOT_STICKY
+                val mode = intent.getStringExtra("mode") ?: "DIRECT"
+                
+                scope.launch { connect(host, port, user, privateKey, mode) }
             }
             ACTION_DISCONNECT -> {
                 disconnect()
@@ -41,10 +43,10 @@ class LunaVpnService : VpnService() {
         return START_STICKY
     }
 
-    private suspend fun connect(host: String, port: Int, user: String, pass: String) {
+    private suspend fun connect(host: String, port: Int, user: String, privateKey: String, mode: String) {
         try {
             val sshTunnel = SshTunnel()
-            sshTunnel.connect(host, port, user, pass)
+            sshTunnel.connect(host, port, user, privateKey)
             ssh = sshTunnel
 
             val socksServer = Socks5Server(sshTunnel)
@@ -66,7 +68,7 @@ class LunaVpnService : VpnService() {
             vpnInterface = builder.establish()
                 ?: throw IllegalStateException("Falha ao criar TUN")
 
-            updateNotification("Conectado • SSH $host")
+            updateNotification("Conectado • Modo: $mode")
         } catch (e: Exception) {
             updateNotification("Erro: ${e.message}")
             disconnect()
