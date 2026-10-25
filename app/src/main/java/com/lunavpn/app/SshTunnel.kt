@@ -14,7 +14,7 @@ class PayloadSocketFactory(private val payload: String) : SocketFactory {
         if (payload.isNotEmpty()) {
             val out = socket.getOutputStream()
             // Substitui os marcadores [crlf] por quebras de linha reais
-            val formattedPayload = payload.replace("[crlf]", "\r\n")
+            val formattedPayload = payload.replace("[crlf]", "\r\n").replace("[lf]", "\n")
             out.write(formattedPayload.toByteArray())
             out.flush()
         }
