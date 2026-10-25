@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:label="Luna VPN"
         android:supportsRtl="true"
