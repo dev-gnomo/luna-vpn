@@ -27,13 +27,18 @@ class LunaVpnService : VpnService() {
             ACTION_CONNECT -> {
                 createChannel()
                 startForeground(NOTIF_ID, buildNotification("Conectando…"))
+                
                 val host = intent.getStringExtra("host") ?: return START_NOT_STICKY
                 val port = intent.getIntExtra("port", 22)
                 val user = intent.getStringExtra("user") ?: return START_NOT_STICKY
                 val privateKey = intent.getStringExtra("privateKey") ?: return START_NOT_STICKY
                 val mode = intent.getStringExtra("mode") ?: "DIRECT"
                 
-                scope.launch { connect(host, port, user, privateKey, mode) }
+                // AQUI: Pegamos a payload que o MainActivity recebeu do backend
+                val payload = intent.getStringExtra("payload") ?: ""
+                
+                // Passamos a payload para o connect
+                scope.launch { connect(host, port, user, privateKey, mode, payload) }
             }
             ACTION_DISCONNECT -> {
                 disconnect()
@@ -43,10 +48,13 @@ class LunaVpnService : VpnService() {
         return START_STICKY
     }
 
-    private suspend fun connect(host: String, port: Int, user: String, privateKey: String, mode: String) {
+    // AQUI: Adicionamos o parâmetro 'payload' na função
+    private suspend fun connect(host: String, port: Int, user: String, privateKey: String, mode: String, payload: String) {
         try {
             val sshTunnel = SshTunnel()
-            sshTunnel.connect(host, port, user, privateKey)
+            
+            // AQUI: Passamos a payload para o túnel SSH
+            sshTunnel.connect(host, port, user, privateKey, payload)
             ssh = sshTunnel
 
             val socksServer = Socks5Server(sshTunnel)
@@ -111,7 +119,7 @@ class LunaVpnService : VpnService() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Luna VPN")
             .setContentText(text)
-            .setSmallIcon(android.R.drawable.ic_lock_lock) // Ícone padrão provisório
+            .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setContentIntent(pi)
             .setOngoing(true)
             .build()
