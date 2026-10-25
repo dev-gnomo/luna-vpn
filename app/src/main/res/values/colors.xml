@@ -2,8 +2,8 @@
 <resources>
     <color name="luna_bg">#0B0E14</color> <!-- Preto espacial profundo -->
     <color name="luna_surface">#1A1F2B</color> <!-- Cinza azulado escuro -->
-    <color name="luna_primary">#FF8C00</color> <!-- Laranja do visor do astronauta -->
-    <color name="luna_text">#FFFFFF</color> <!-- Branco -->
+    <color name="luna_primary">#2196F3</color> <!-- Laranja do visor do astronauta -->
+    <color name="luna_text">#2196F3</color> <!-- Azul -->
     <color name="luna_text_muted">#A0AAB5</color> <!-- Cinza claro -->
     <color name="luna_red">#D32F2F</color> <!-- Vermelho para desconectar -->
 </resources>
