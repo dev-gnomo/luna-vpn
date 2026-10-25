@@ -5,67 +5,60 @@ import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var hostInput: EditText
-    private lateinit var portInput: EditText
-    private lateinit var userInput: EditText
-    private lateinit var passInput: EditText
-    private var pendingConnect = false
+    private var pendingMode = ""
 
     private val vpnPermLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
-            if (res.resultCode == Activity.RESULT_OK && pendingConnect) startVpn()
-            else Toast.makeText(this, "Permissão VPN negada", Toast.LENGTH_SHORT).show()
+            if (res.resultCode == Activity.RESULT_OK) {
+                if (pendingMode.isNotEmpty()) startVpn(pendingMode)
+            } else {
+                Toast.makeText(this, "Permissão VPN negada", Toast.LENGTH_SHORT).show()
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        hostInput = findViewById(R.id.hostInput)
-        portInput = findViewById(R.id.portInput)
-        userInput = findViewById(R.id.userInput)
-        passInput = findViewById(R.id.passInput)
+        // Botões dos 4 modos
+        findViewById<Button>(R.id.btnMode1).setOnClickListener { prepareVpn("DIRECT") }
+        findViewById<Button>(R.id.btnMode2).setOnClickListener { prepareVpn("PROXY") }
+        findViewById<Button>(R.id.btnMode3).setOnClickListener { prepareVpn("SSL") }
+        findViewById<Button>(R.id.btnMode4).setOnClickListener { prepareVpn("SSL_PROXY") }
 
-        findViewById<Button>(R.id.connectBtn).setOnClickListener {
-            val intent = VpnService.prepare(this)
-            if (intent != null) {
-                pendingConnect = true
-                vpnPermLauncher.launch(intent)
-            } else {
-                startVpn()
-            }
-        }
-
-        findViewById<Button>(R.id.disconnectBtn).setOnClickListener {
+        // Botão de desconectar
+        findViewById<Button>(R.id.btnDisconnect).setOnClickListener {
             startService(Intent(this, LunaVpnService::class.java).apply {
                 action = LunaVpnService.ACTION_DISCONNECT
             })
         }
     }
 
-    private fun startVpn() {
-        val host = hostInput.text.toString().trim()
-        val port = portInput.text.toString().toIntOrNull() ?: 22
-        val user = userInput.text.toString().trim()
-        val pass = passInput.text.toString()
-        
-        if (host.isBlank() || user.isBlank()) {
-            Toast.makeText(this, "Preencha host e usuário", Toast.LENGTH_SHORT).show()
-            return
+    private fun prepareVpn(mode: String) {
+        pendingMode = mode
+        val intent = VpnService.prepare(this)
+        if (intent != null) {
+            vpnPermLauncher.launch(intent)
+        } else {
+            startVpn(mode)
         }
-        
+    }
+
+    private fun startVpn(mode: String) {
+        // Puxa os dados automaticamente do Config.kt
         startForegroundService(Intent(this, LunaVpnService::class.java).apply {
             action = LunaVpnService.ACTION_CONNECT
-            putExtra("host", host)
-            putExtra("port", port)
-            putExtra("user", user)
-            putExtra("pass", pass)
+            putExtra("host", Config.SSH_HOST)
+            putExtra("port", Config.SSH_PORT)
+            putExtra("user", Config.SSH_USER)
+            putExtra("privateKey", Config.SSH_PRIVATE_KEY) // Envia a chave SSH
+            putExtra("mode", mode) // Envia qual modo foi escolhido
         })
+        Toast.makeText(this, "Conectando modo: $mode", Toast.LENGTH_SHORT).show()
     }
 }
