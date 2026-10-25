@@ -1,3 +1,12 @@
-<resources>
-    <style name="Theme.LunaVPN" parent="Theme.Material3.DayNight.NoActionBar"/>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema base do aplicativo, forçando o modo escuro -->
+    <style name="Theme.LunaVPN" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Cores principais -->
+        <item name="colorPrimary">@color/luna_primary</item>
+        <item name="colorOnPrimary">@color/luna_bg</item>
+        <item name="android:windowBackground">@color/luna_bg</item>
+        <item name="android:statusBarColor">@color/luna_bg</item>
+        <item name="android:navigationBarColor">@color/luna_bg</item>
+        <item name="android:textColor">@color/luna_text</item>
+    </style>
 </resources>
